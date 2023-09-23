@@ -40,7 +40,7 @@ export class StoriesController {
 
         })
     }}
-    //API xem chi tiết dữ liệu người dùng
+    //API xem chi tiết stories
     @Get('get')
     @UseGuards(StoriesGuard)
     async get(@Req() req:Request,@Res() res: Response):Promise<any> {
@@ -62,7 +62,7 @@ export class StoriesController {
     }
 
 
-    //API chỉnh sửa dữ liệu người dùng
+    //API chỉnh sửa stories
     @Put('update-stories')
     @UseGuards(StoriesGuard)
     @UseInterceptors(FilesInterceptor('files',10,{
