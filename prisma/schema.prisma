@@ -1,0 +1,32 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model account {
+  id       Int       @id @default(autoincrement())
+  username String    @unique(map: "username") @db.VarChar(50)
+  password String    
+  email    String    @unique(map: "email") @db.VarChar(50)
+  stories  stories[]
+}
+
+model stories {
+  id           Int     @id @default(autoincrement())
+  your_name    String? @db.VarChar(50) 
+  crush_name    String? @db.VarChar(50) 
+  avatar       String? @db.VarChar(225)
+  crush_avatar String? @db.VarChar(225)
+  file_music   String? @db.VarChar(225)
+  story        String? @db.VarChar(50)
+  side_story   String? @db.VarChar(50)
+  day_love_begins DateTime? @db.Date
+  id_account   Int? @unique(map: "id_account") 
+  account      account? @relation(fields: [id_account], references: [id], onUpdate: Cascade,onDelete: Cascade, map: "PK_stories")
+
+  @@index([id_account], map: "PK_stories")
+} 
