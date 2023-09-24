@@ -5,6 +5,10 @@ import { PrismaService } from 'src/prisma.service';
 import { PassportModule } from '@nestjs/passport';
 import { JwtModule, JwtService } from '@nestjs/jwt';
 import { JwtStrategy } from './jwt.strategy';
+import { MailerModule } from '@nestjs-modules/mailer';
+import {HandlebarsAdapter} from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
+import { join } from 'path';
+import { async } from 'rxjs';
 
 
 

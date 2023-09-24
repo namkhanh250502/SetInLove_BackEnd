@@ -4,6 +4,8 @@ import { RegisterDto } from './dto/register.dto';
 import { Response,Request } from 'express';
 import { LoginDto } from './dto/login.dto';
 import { StoriesGuard } from 'src/stories/stories.guard';
+import { async } from 'rxjs';
+import { FogotPass } from './dto/fogotPass.dto';
 
 
 
@@ -58,6 +60,7 @@ export class AccountController {
     @Get('detailaccount')
     @UseGuards(StoriesGuard)
     async detailaccount(@Req() req: Request,@Res() res: Response):Promise<object> {
+        
         try {
             const result = await this.accountService.detailaccount(req)
             return res.status(200).json({
@@ -95,4 +98,27 @@ export class AccountController {
             })
         }
     }
+
+   
+    @Get('send')
+    async sendEmail(@Req() req: Request,@Res() res: Response,@Body() fogotPass: FogotPass):Promise<any> {
+
+      try {
+        const result = await this.accountService.sendEmail(fogotPass);
+        return res.status(200).json({
+            status:'Ok!',
+            message: 'Email đã được gửi thành công',
+            result: result
+        })
+      } catch (error) {
+        console.log('error: ', error.message);
+        return res.status(500).json({
+            status:'Err!',
+            message: 'Không thể gửi Email'
+        })
+    }
+    }
 }
+
+    
+

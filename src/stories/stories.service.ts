@@ -35,16 +35,16 @@ export class StoriesService {
         return await this.prisma.stories.create({data: createData})
     }
     async updateStories(files: Express.Multer.File[],storiesDto:StoriesDto,req:Request):Promise<any> {
-        const originFile =  this.prisma.stories.findFirst()
+        const originFile = await this.prisma.stories.findFirst()
         const updateData = {
-            avatar: (await originFile).avatar,
-            crush_avatar: (await originFile).crush_avatar,
-            file_music:(await originFile).file_music,
+            avatar:  originFile.avatar,
+            crush_avatar:  originFile.crush_avatar,
+            file_music: originFile.file_music,
             side_story: storiesDto.side_story,
             your_name: storiesDto.your_name,
             crush_name: storiesDto.crush_name,
             story: storiesDto.story,
-            day_love_begins:(await originFile).day_love_begins    
+            day_love_begins: originFile.day_love_begins    
         }
         if(files[0]) {
             updateData.avatar = files[0].path.replace('uploads\\','')

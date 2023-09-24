@@ -15,7 +15,7 @@ export class StoriesController {
   //API tạo stories
   @Post('create-stories')
   @UseInterceptors(
-    FilesInterceptor('files', 10, {
+    FilesInterceptor('files',3, {
       storage: diskStorage({
         destination: './uploads',
         filename: (req, file, cb) => {
@@ -65,7 +65,7 @@ export class StoriesController {
     //API chỉnh sửa stories
     @Put('update-stories')
     @UseGuards(StoriesGuard)
-    @UseInterceptors(FilesInterceptor('files',10,{
+    @UseInterceptors(FilesInterceptor('files',3,{
       storage:diskStorage({
         destination: './uploads',
         filename(req, file, callback) {
