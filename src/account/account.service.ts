@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   ConflictException,
   Injectable,
   NotFoundException,
@@ -11,6 +12,7 @@ import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
 import * as nodemailer from 'nodemailer';
 import { FogotPass } from './dto/fogotPass.dto';
+import { ChangePassDto } from './dto/changePass.dto';
 
 @Injectable()
 export class AccountService {
@@ -20,21 +22,21 @@ export class AccountService {
   ) {}
 
   async register(registerDto: RegisterDto): Promise<RegisterDto> {
-    const origin_username = await this.prisma.account.findFirst({
+    const original_username = await this.prisma.account.findFirst({
       where: {
         username: registerDto.username,
       },
     });
 
-    if (origin_username) {
+    if (original_username) {
       throw new ConflictException('Tên tài khoản đã tồn tại');
     }
-    const origin_email = await this.prisma.account.findFirst({
+    const original_email = await this.prisma.account.findFirst({
       where: {
         email: registerDto.email,
       },
     });
-    if (origin_email) {
+    if (original_email) {
       throw new ConflictException('Email đã tồn tại');
     }
     return await this.prisma.account.create({
@@ -61,7 +63,7 @@ export class AccountService {
     const hashedPassword = await bcrypt.compare(
       password,
       login_username.password,
-    );
+      );
     if (!hashedPassword) {
       throw new NotFoundException('Mật khẩu không chính xác');
     }
@@ -72,10 +74,13 @@ export class AccountService {
   }
 
   async detailaccount(req: Request): Promise<object> {
+    
+   
     const accountID = this.jwtService.verify(
-      req.rawHeaders[1].replace('Bearer ', ''),
+      req.headers.authorization.replace('Bearer ', ''),
       { secret: process.env.JWT_SECRET },
-    );
+      );
+      console.log('accountID 111: ', accountID);
     return this.prisma.account.findUnique({
       where: { id: Number(accountID.id) },
       include: {
@@ -89,10 +94,12 @@ export class AccountService {
   }
 
   async removeaccount(req: Request): Promise<object> {
+    console.log('req: ', req);
     const accountID = this.jwtService.verify(
-      req.rawHeaders[1].replace('Bearer ', ''),
+      req.headers.authorization.replace('Bearer ', ''),
       { secret: process.env.JWT_SECRET },
-    );
+      );
+      console.log('accountID: ', accountID);
     return this.prisma.account.delete({
       where: { id: Number(accountID.id) },
       include: {
@@ -105,10 +112,22 @@ export class AccountService {
     });
   }
 
-  async sendEmail(fogotPass: FogotPass): Promise<any> {
-    const to = await this.prisma.account.findFirst()
+  async sendEmail(fogotPass: FogotPass): Promise<object> {
+    function makeid(length) {
+      let result = '';
+      const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+      const charactersLength = characters.length;
+      let counter = 0;
+      while (counter < length) {
+        result += characters.charAt(Math.floor(Math.random() * charactersLength));
+        counter += 1;
+      }
+      return result;
+    }   
+    const newpass = makeid(12);
+    const to = await this.prisma.account.findFirst({where:{email: fogotPass.email}})
     if(to.email !== fogotPass.email) {
-        throw new NotFoundException('Email chưa được đăng ký')
+      throw new NotFoundException('Email chưa được đăng ký')
     }
     const transporter = nodemailer.createTransport({
       host: 'smtp.gmail.com',
@@ -123,15 +142,36 @@ export class AccountService {
       from: process.env.EMAIL_ID,
       to: fogotPass.email,
       subject: 'Set In Love',
-      html: `</br><p style="color: green">Mã OTP của bạn là:</p></br>
-          <h3><b>${String(Math.floor(Math.random() * 900000) + 100000)}</b></h3>`,
+      html: `<pstyle="color: green">Mật khẩu mới của bạn là:</p>
+          <h3><b>${newpass}</b></h3>`,
     };
-     transporter.sendMail(mailOptions, (error, info) => {
-        if (error) {
-            return console.log(error);
-        }
-        console.log(`Message sent: ${info.response}`);
-    });
+    try {
+      transporter.sendMail(mailOptions)
+      return await this.prisma.account.update({
+        where:{email:fogotPass.email},
+        data:{password: await bcrypt.hash(newpass,10)}
+      })
+    } catch (error) {
+      console.log('error: ', error);    
+    }
+  }
 
+  async changePass(changePassDto: ChangePassDto,req: Request):Promise<object> {
+    const {password, newpass} = changePassDto
+    const original_account =await this.jwtService.verifyAsync(req.headers.authorization.replace("Bearer ",""),{secret: process.env.JWT_SECRET}) 
+    const old_pass = await bcrypt.compare(password,original_account.password)
+    if(!old_pass) {
+      throw new BadRequestException('Mật khẩu cũ không chính xác')
+    }
+    return await this.prisma.account.update({
+      where:{id:Number(original_account.id)} ,
+      data:{
+        password: await bcrypt.hash(newpass,10)
+      }
+    })
   }
 }
+
+
+
+

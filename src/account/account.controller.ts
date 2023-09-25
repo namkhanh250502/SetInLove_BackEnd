@@ -1,11 +1,12 @@
-import { Body, Controller, Delete, Get, Post, Put, Req, Res, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Header, Headers, Post, Put, Req, Res, UseGuards } from '@nestjs/common';
 import { AccountService } from './account.service';
 import { RegisterDto } from './dto/register.dto';
 import { Response,Request } from 'express';
 import { LoginDto } from './dto/login.dto';
 import { StoriesGuard } from 'src/stories/stories.guard';
-import { async } from 'rxjs';
 import { FogotPass } from './dto/fogotPass.dto';
+import { async } from 'rxjs';
+import { ChangePassDto } from './dto/changePass.dto';
 
 
 
@@ -57,12 +58,15 @@ export class AccountController {
     }
 
     //API đọc dữ liệu người dùng
-    @Get('detailaccount')
+    @Get('detail-account')
+    @Header('Cache-Control', 'none')
     @UseGuards(StoriesGuard)
     async detailaccount(@Req() req: Request,@Res() res: Response):Promise<object> {
-        
+        console.log('res 11: ', req);
+    
         try {
             const result = await this.accountService.detailaccount(req)
+            console.log('result: ', result);
             return res.status(200).json({
                 status:'Ok!',
                 message:'Đọc dữ liệu thành công',
@@ -70,9 +74,9 @@ export class AccountController {
             })
             
         } catch (error) {
-            console.log('error: ', error);
+            console.log('error: ', error.message);
             return res.status(500).json({
-                status:'Ok!',
+                status:'Err!',
                 message:'Không thể đọc dữ liệu'
             })
         }
@@ -99,9 +103,9 @@ export class AccountController {
         }
     }
 
-   
-    @Get('send')
-    async sendEmail(@Req() req: Request,@Res() res: Response,@Body() fogotPass: FogotPass):Promise<any> {
+    //API quên mật khẩu
+    @Get('fogot-password')
+    async sendEmail(@Req() req: Request,@Res() res: Response,@Body() fogotPass: FogotPass):Promise<object> {
 
       try {
         const result = await this.accountService.sendEmail(fogotPass);
@@ -118,7 +122,31 @@ export class AccountController {
         })
     }
     }
+    //API đổi mật khẩu
+    @Put('change-password')
+    @UseGuards(StoriesGuard)
+    async changePass(@Body() changePassDto:ChangePassDto,@Req() req:Request,@Res() res: Response):Promise<object> {
+        try {
+            const result = await this.accountService.changePass(changePassDto,req)
+            return res.status(200).json({
+                status:'Ok!',
+                message:'Đổi mật khẩu thành công',
+                result: result
+            })
+        } catch (error) {
+            console.log('error: ', error);
+            return res.status(500).json({
+                status:'Err!',
+                message:'Đổi mật không khẩu thành công'
+            })
+        }
+    }
+
+ 
 }
+
+
+
 
     
 
