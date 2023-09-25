@@ -142,7 +142,7 @@ export class AccountService {
       from: process.env.EMAIL_ID,
       to: fogotPass.email,
       subject: 'Set In Love',
-      html: `<pstyle="color: green">Mật khẩu mới của bạn là:</p>
+      html: `<p style="color: green">Mật khẩu mới của bạn là:</p>
           <h3><b>${newpass}</b></h3>`,
     };
     try {
