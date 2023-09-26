@@ -37,26 +37,14 @@ export class StoriesService {
       day_love_begins: null,
       id_account: Number(accountID.id),
     };
-    if (files.avatar) {
-      if (files.avatar[0]) {
-        createData.avatar = files.avatar[0].path.replace('uploads\\', '');
-      }
+    if (files.avatar && files.avatar[0]) {    
+        createData.avatar = files.avatar[0].path.replace('uploads\\', '');  
     }
-    if (files.crush_avatar) {
-      if (files.crush_avatar[0]) {
-        createData.crush_avatar = files.crush_avatar[0].path.replace(
-          'uploads\\',
-          '',
-        );
-      }
+    if (files.crush_avatar && files.crush_avatar[0]) {
+        createData.crush_avatar = files.crush_avatar[0].path.replace('uploads\\','',);
     }
-    if (files.file_music) {
-      if (files.file_music[0]) {
-        createData.file_music = files.file_music[0].path.replace(
-          'uploads\\',
-          '',
-        );
-      }
+    if (files.file_music && files.file_music[0]) {
+        createData.file_music = files.file_music[0].path.replace( 'uploads\\','',);
     }
     if (storiesDto.day_love_begins) {
       createData.day_love_begins = storiesDto.day_love_begins;
@@ -85,26 +73,14 @@ export class StoriesService {
       story: storiesDto.story,
       day_love_begins: originalFile.day_love_begins,
     };
-    if (files.avatar) {
-      if (files.avatar[0]) {
-        updateData.avatar = files.avatar[0].path.replace('uploads\\', '');
-      }
+    if (files.avatar && files.avatar[0]) { 
+        updateData.avatar = files.avatar[0].path.replace('uploads\\', ''); 
     }
-    if (files.crush_avatar) {
-      if (files.crush_avatar[0]) {
-        updateData.crush_avatar = files.crush_avatar[0].path.replace(
-          'uploads\\',
-          '',
-        );
-      }
+    if (files.crush_avatar && files.crush_avatar[0]) {
+        updateData.crush_avatar = files.crush_avatar[0].path.replace('uploads\\','',);
     }
-    if (files.file_music) {
-      if (files.file_music[0]) {
-        updateData.file_music = files.file_music[0].path.replace(
-          'uploads\\',
-          '',
-        );
-      }
+    if (files.file_music && files.file_music[0]) {
+        updateData.file_music = files.file_music[0].path.replace('uploads\\','',);  
     }
     if (storiesDto.day_love_begins) {
       updateData.day_love_begins = storiesDto.day_love_begins;

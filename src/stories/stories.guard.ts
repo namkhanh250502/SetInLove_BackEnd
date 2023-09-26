@@ -14,7 +14,9 @@ export class StoriesGuard implements CanActivate {
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const req = await context.switchToHttp().getRequest();
+    console.log('req: ', req.headers.authorization);
     const token = await req.headers.authorization.replace('Bearer ','')
+    console.log('req.headers.authorization: ', req.headers.authorization);
     if(!token) {
       throw new UnauthorizedException('Không tìm thấy token!')
     }

@@ -20,13 +20,59 @@ import { diskStorage } from 'multer';
 import { Request, Response } from 'express';
 import { StoriesDto } from './dto/stories.dto';
 import { StoriesGuard } from './stories.guard';
+import { ApiBearerAuth, ApiBody, ApiConsumes, ApiOperation, ApiTags } from '@nestjs/swagger';
 
+
+@ApiTags('Stories')
 @Controller('stories')
 export class StoriesController {
   constructor(private readonly storiesService: StoriesService) {}
 
   //API tạo stories
-  @Post('create-stories')
+  @ApiOperation({ summary: 'Tạo stories' })
+  @ApiBearerAuth()
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+			type: 'object',
+			properties: {
+				avatar: {
+					type: 'string',
+					format:'binary'
+				},
+				crush_avatar: {
+           type: 'string',
+           format:'binary'
+        },
+				file_music: {
+					type: 'string',
+					format:'binary'
+				},
+				your_name: {
+					type: 'string',
+					default:'Nguyễn Văn A',
+				},
+				crush_name: {
+					type: 'string',
+					default:'Nguyễn Thị B',
+				},
+        story:{
+          type:'string',
+          default:'Welcome to Set In Love'
+        },
+        side_story:{
+          type:'string',
+          default:'See you again'
+        },
+        day_love_begins:{
+          type:' date',
+          default:'2011-10-10T14:48:00Z'
+        }
+			},
+			required: [],
+		}
+  })
+  @Post('create')
   @UseInterceptors(
     FileFieldsInterceptor(
       [
@@ -75,7 +121,9 @@ export class StoriesController {
     }
   }
   //API xem chi tiết stories
-  @Get('get')
+  @ApiOperation({ summary: 'Chi tiết stories' })
+  @ApiBearerAuth()
+  @Get('detail')
   @UseGuards(StoriesGuard)
   async get(@Req() req: Request, @Res() res: Response): Promise<object> {
     console.log('req: ', req);
@@ -96,8 +144,51 @@ export class StoriesController {
   }
 
   //API chỉnh sửa stories
-  @Put('update-stories')
+  @ApiOperation({ summary: 'Chỉnh sửa stories' })
+  @Put('update')
+  @ApiBearerAuth()
+  @ApiConsumes('multipart/form-data')
   @UseGuards(StoriesGuard)
+  @ApiBody({
+    schema: {
+			type: 'object',
+			properties: {
+				avatar: {
+					type: 'string',
+					format:'binary'
+				},
+				crush_avatar: {
+           type: 'string',
+           format:'binary'
+        },
+				file_music: {
+					type: 'string',
+					format:'binary'
+				},
+				your_name: {
+					type: 'string',
+					default:'Nguyễn Văn A',
+				},
+				crush_name: {
+					type: 'string',
+					default:'Nguyễn Thị B',
+				},
+        story:{
+          type:'string',
+          default:'Welcome to Set In Love'
+        },
+        side_story:{
+          type:'string',
+          default:'See you again'
+        },
+        day_love_begins:{
+          type:' date',
+          default:'2011-10-10T14:48:00Z'
+        }
+			},
+			
+		}
+  })
   @UseInterceptors(
     FileFieldsInterceptor(
       [

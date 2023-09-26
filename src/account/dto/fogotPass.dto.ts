@@ -1,6 +1,12 @@
+import { ApiProperty } from "@nestjs/swagger";
 import { IsEmail, IsOptional, IsString, Length, isEmail } from "class-validator";
 
-export class FogotPass {
+export class FogotPassDto {
+    
+    @ApiProperty({
+        description:'the email of the account',
+        example:'setinlove@gmail.com'
+    })
     @IsEmail()
     email: string
     @IsString()

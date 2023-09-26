@@ -4,18 +4,19 @@ import { RegisterDto } from './dto/register.dto';
 import { Response,Request } from 'express';
 import { LoginDto } from './dto/login.dto';
 import { StoriesGuard } from 'src/stories/stories.guard';
-import { FogotPass } from './dto/fogotPass.dto';
-import { async } from 'rxjs';
+import { FogotPassDto } from './dto/fogotPass.dto';
 import { ChangePassDto } from './dto/changePass.dto';
-
+import { ApiCreatedResponse, ApiOperation, ApiTags,ApiOkResponse, ApiBody, ApiBearerAuth, ApiConsumes, ApiResponse } from '@nestjs/swagger';
 
 
 
 @Controller('account')
+@ApiTags('Account')
 export class AccountController {
     constructor(private readonly accountService: AccountService) {}
 
-    //APi đăng kí
+    //APi đăng ký
+    @ApiOperation({ summary: 'Đăng ký'})
     @Post('register')
     async register(@Body() registerDto: RegisterDto, @Res() res: Response,@Req() req:Request):Promise<object> {
        
@@ -35,9 +36,9 @@ export class AccountController {
                 message: 'Đăng kí thất bại'
             })
         }
-    }
-    
+    }  
     //API đăng nhập
+    @ApiOperation({ summary: 'Đăng nhập' })
     @Post('login')
     async login(@Body() loginDto: LoginDto, @Res() res: Response):Promise<object> {
         try {
@@ -58,12 +59,12 @@ export class AccountController {
     }
 
     //API đọc dữ liệu người dùng
-    @Get('detail-account')
+    @ApiOperation({ summary: 'Chi tiết người dùng' })
+    @ApiBearerAuth()
+    @Get('detail')
     @Header('Cache-Control', 'none')
     @UseGuards(StoriesGuard)
-    async detailaccount(@Req() req: Request,@Res() res: Response):Promise<object> {
-        console.log('res 11: ', req);
-    
+    async detailaccount(@Req() req: Request,@Res() res: Response):Promise<object> {  
         try {
             const result = await this.accountService.detailaccount(req)
             console.log('result: ', result);
@@ -83,7 +84,9 @@ export class AccountController {
     }
 
     //API xóa tài khoản người dùng
-    @Delete('remove-account')
+    @ApiOperation({ summary: 'Xóa tài khoản người dùng' })
+    @Delete('remove')
+    @ApiBearerAuth()
     @UseGuards(StoriesGuard)
     async removeaccount(@Req() req: Request,@Res() res: Response):Promise<object> {
         try {
@@ -104,11 +107,12 @@ export class AccountController {
     }
 
     //API quên mật khẩu
-    @Get('fogot-password')
-    async sendEmail(@Req() req: Request,@Res() res: Response,@Body() fogotPass: FogotPass):Promise<object> {
+    @ApiOperation({ summary: 'Quên mật khẩu'})
+    @Put('forgot-password')
+    async sendEmail(@Req() req: Request,@Res() res: Response,@Body() fogotPassDto: FogotPassDto):Promise<object> {
 
       try {
-        const result = await this.accountService.sendEmail(fogotPass);
+        const result = await this.accountService.sendEmail(fogotPassDto);
         return res.status(200).json({
             status:'Ok!',
             message: 'Email đã được gửi thành công',
@@ -123,7 +127,9 @@ export class AccountController {
     }
     }
     //API đổi mật khẩu
+    @ApiOperation({ summary: 'Đổi mật khẩu' })
     @Put('change-password')
+    @ApiBearerAuth()
     @UseGuards(StoriesGuard)
     async changePass(@Body() changePassDto:ChangePassDto,@Req() req:Request,@Res() res: Response):Promise<object> {
         try {
