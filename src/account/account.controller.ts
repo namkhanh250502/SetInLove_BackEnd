@@ -50,10 +50,12 @@ export class AccountController {
                 result: result
             })
         } catch (error) {
+            const result = await this.accountService.login(loginDto)
             console.log('error: ', error);
             return res.status(500).json({
                 status:'Err!',
-                message:'Đăng nhập thất bại'
+                message:'Đăng nhập thất bại',
+                result
             })
         }
     }
