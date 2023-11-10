@@ -1,5 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger"
-import { IsString, Length } from "class-validator"
+import { IsEmail, IsString, Length } from "class-validator"
 
 export class RegisterDto {
     @ApiProperty({
@@ -20,6 +20,6 @@ export class RegisterDto {
         description:'the email of the account',
         example:'setinlove@gmail.com'
     })
-    @IsString()
+    @IsEmail({},{message:'Vui lòng nhập đúng định dạng email'})
     email: string
 }

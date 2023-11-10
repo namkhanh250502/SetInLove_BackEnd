@@ -26,14 +26,17 @@ export class AccountController {
             console.log('result: ', result);
             return res.status(200).json({
                 status:'Ok!',
-                message: 'Đăng kí thành công',
+                message: 'Đăng ký thành công!',
                 result: result
             })
         } catch (error) {
+            const result = await this.accountService.register(registerDto)
+
             console.log('error: ', error);
             return res.status(500).json({
                 status:'Err!',
-                message: 'Đăng kí thất bại'
+                message: 'Đăng ký thất bại!',
+                result 
             })
         }
     }  
@@ -121,10 +124,12 @@ export class AccountController {
             result: result
         })
       } catch (error) {
-        console.log('error: ', error.message);
+        console.log('error: ', error);
+        const result = await this.accountService.sendEmail(fogotPassDto);
         return res.status(500).json({
             status:'Err!',
-            message: 'Không thể gửi Email'
+            message: 'Không thể gửi Email',
+            result
         })
     }
     }

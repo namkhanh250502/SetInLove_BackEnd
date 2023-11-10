@@ -6,7 +6,7 @@ import * as path from 'path'
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 async function bootstrap() {
-  const app = await NestFactory.create<NestExpressApplication>(AppModule);
+  const app = await NestFactory.create<NestExpressApplication>(AppModule); 
   app.useStaticAssets(path.join(__dirname ,"../uploads"))
   const config = new DocumentBuilder()
     .setTitle('Set In Love')
@@ -18,6 +18,6 @@ async function bootstrap() {
   app.enableCors()
   SwaggerModule.setup('apidoc', app, document);
   app.useGlobalPipes(new ValidationPipe())
-  await app.listen(3000,'192.168.1.11');
+  await app.listen(3000);
 }
 bootstrap();

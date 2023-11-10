@@ -7,7 +7,7 @@ export class FogotPassDto {
         description:'the email of the account',
         example:'setinlove@gmail.com'
     })
-    @IsEmail()
+    @IsEmail({},{message:'Vui lòng nhập đúng định dạng email!'})
     email: string
     @IsString()
     @IsOptional()
