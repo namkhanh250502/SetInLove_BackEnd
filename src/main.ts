@@ -6,6 +6,7 @@ import * as path from 'path'
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 async function bootstrap() {
+  const PORT = 3001
   const app = await NestFactory.create<NestExpressApplication>(AppModule); 
   app.useStaticAssets(path.join(__dirname ,"../uploads"))
   const config = new DocumentBuilder()
@@ -18,8 +19,8 @@ async function bootstrap() {
   app.enableCors()
   SwaggerModule.setup('apidoc', app, document);
   app.useGlobalPipes(new ValidationPipe())
-  await app.listen(3001, () => {
-    console.log("server listening on port 3000");
+  await app.listen(PORT, () => {
+    console.log("server listening on port: ", PORT);
   });
 }
 bootstrap();
